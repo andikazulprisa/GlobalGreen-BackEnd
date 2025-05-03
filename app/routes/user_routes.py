@@ -77,4 +77,4 @@ def create_dummy_user():
 
 @user_bp.route('/test', methods=['GET'])
 def test_route():
-    return jsonify({'message': 'User endpoint is working!'})
+    return jsonify({'message': 'hay sayang'})
