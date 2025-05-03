@@ -17,7 +17,7 @@ def register():
         first_name=data.get('first_name'),
         last_name=data.get('last_name'),
         phone=data.get('phone'),
-        role=data.get('role', 'customer')
+        role=data.get('role', 'Customer')
     )
     db.session.add(new_user)
     db.session.commit()
