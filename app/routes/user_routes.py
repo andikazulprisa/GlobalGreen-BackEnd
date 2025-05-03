@@ -74,3 +74,7 @@ def create_dummy_user():
     db.session.add(dummy_user)
     db.session.commit()
     return jsonify({'message': 'Dummy user created successfully'})
+
+@user_bp.route('/test', methods=['GET'])
+def test_route():
+    return jsonify({'message': 'User endpoint is working!'})
