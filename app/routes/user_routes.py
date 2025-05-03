@@ -60,24 +60,17 @@ def delete_user(id):
     db.session.commit()
     return jsonify({'message': 'User deleted successfully'})
 
-# Dummy db
-@user_bp.route('/dummy', methods=['GET'])
-def get_dummy_users():
-    dummy_users = [
-        {
-            "id": 1,
-            "email": "nNj6u@example.com",
-            "first_name": "John",
-            "last_name": "Doe",
-            "phone": "1234567890",
-            "role": "Customer"
-        },
-        {
-            "id": 2,
-            "email": "t2hYH@example.com",
-            "first_name": "Jane",
-            "last_name": "Doe", 
-            "phone": "9876543210",
-            "role": "Admin"        
-        }
-    ]
+# POST /users/dummy
+@user_bp.route('/dummy', methods=['POST'])
+def create_dummy_user():
+    dummy_user = User(
+        email='test@example.com',
+        password='password123',
+        first_name='Test',
+        last_name='User',
+        phone='081234567890',
+        role='Customer'
+    )
+    db.session.add(dummy_user)
+    db.session.commit()
+    return jsonify({'message': 'Dummy user created successfully'})
