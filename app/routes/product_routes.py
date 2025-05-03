@@ -4,19 +4,19 @@ from app.extensions import db
 
 product_bp = Blueprint('product_bp', __name__)
 
-@product_bp.route('/products', methods=['GET'])
+@product_bp.route('/', methods=['GET'])
 def get_products():
     products = Product.query.all()
     return jsonify([product.as_dict() for product in products])
 
-@product_bp.route('/products/<int:id>', methods=['GET'])
+@product_bp.route('/<int:id>', methods=['GET'])
 def get_product(id):
     product = Product.query.get(id)
     if not product:
         return jsonify({'message': 'Product not found'}), 404
     return jsonify(product.as_dict())
 
-@product_bp.route('/products', methods=['POST'])
+@product_bp.route('/', methods=['POST'])
 def add_product():
     data = request.get_json()
     new_product = Product(
@@ -33,7 +33,7 @@ def add_product():
     db.session.commit()
     return jsonify({'message': 'Product created successfully'}), 201
 
-@product_bp.route('/products/<int:id>', methods=['PUT'])
+@product_bp.route('/<int:id>', methods=['PUT'])
 def update_product(id):
     product = Product.query.get(id)
     if not product:
@@ -50,7 +50,7 @@ def update_product(id):
     db.session.commit()
     return jsonify({'message': 'Product updated successfully'})
 
-@product_bp.route('/products/<int:id>', methods=['DELETE'])
+@product_bp.route('/<int:id>', methods=['DELETE'])
 def delete_product(id):
     product = Product.query.get(id)
     if not product:

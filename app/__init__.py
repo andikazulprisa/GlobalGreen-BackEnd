@@ -39,7 +39,7 @@ def create_app():
     migrate.init_app(app, db)
 
     app.register_blueprint(user_bp, url_prefix='/users')
-    app.register_blueprint(product_bp)
+    app.register_blueprint(product_bp, url_prefix='/products')
     app.register_blueprint(category_bp, url_prefix='/categories')
     app.register_blueprint(cart_bp)
     app.register_blueprint(wishlist_bp, url_prefix='/wishlists')

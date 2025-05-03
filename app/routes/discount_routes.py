@@ -6,20 +6,20 @@ from datetime import datetime
 discount_bp = Blueprint('discount_bp', __name__)
 
 # Get all discounts
-@discount_bp.route('/api/discounts', methods=['GET'])
+@discount_bp.route('/', methods=['GET'])
 def get_discounts():
     discounts = Discount.query.all()
     result = [d.to_dict() for d in discounts]
     return jsonify(result), 200
 
 # Get discount by ID
-@discount_bp.route('/api/discounts/<int:discount_id>', methods=['GET'])
+@discount_bp.route('/<int:discount_id>', methods=['GET'])
 def get_discount(discount_id):
     discount = Discount.query.get_or_404(discount_id)
     return jsonify(discount.to_dict()), 200
 
 # Create new discount
-@discount_bp.route('/api/discounts', methods=['POST'])
+@discount_bp.route('/', methods=['POST'])
 def create_discount():
     data = request.get_json()
 
@@ -36,7 +36,7 @@ def create_discount():
     return jsonify(discount.to_dict()), 201
 
 # Update discount
-@discount_bp.route('/api/discounts/<int:discount_id>', methods=['PUT'])
+@discount_bp.route('/<int:discount_id>', methods=['PUT'])
 def update_discount(discount_id):
     discount = Discount.query.get_or_404(discount_id)
     data = request.get_json()
@@ -54,7 +54,7 @@ def update_discount(discount_id):
     return jsonify(discount.to_dict()), 200
 
 # Delete discount
-@discount_bp.route('/api/discounts/<int:discount_id>', methods=['DELETE'])
+@discount_bp.route('/<int:discount_id>', methods=['DELETE'])
 def delete_discount(discount_id):
     discount = Discount.query.get_or_404(discount_id)
     db.session.delete(discount)
