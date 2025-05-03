@@ -25,7 +25,9 @@ from app.routes.tag_routes import tag_bp
 from app.routes.recipe_tag_routes import recipe_tag_bp
 from app.routes.recipe_ingredient_routes import recipe_ingredient_bp
 from app.routes.review_routes import review_bp
+from app.routes.auth_routes import auth_bp
 from flask_cors import CORS
+from app.extensions import jwt
 
 
 
@@ -35,22 +37,25 @@ def create_app():
 
     CORS(app)
 
+    jwt.init_app(app)
+    app.config['JWT_SECRET_KEY'] = 'yumesekai'
+
     db.init_app(app)
     migrate.init_app(app, db)
 
     app.register_blueprint(user_bp, url_prefix='/users')
     app.register_blueprint(product_bp, url_prefix='/products')
     app.register_blueprint(category_bp, url_prefix='/categories')
-    app.register_blueprint(cart_bp)
+    app.register_blueprint(cart_bp, url_prefix='/carts')
     app.register_blueprint(wishlist_bp, url_prefix='/wishlists')
     app.register_blueprint(recipe_bp, url_prefix='/recipes')
     app.register_blueprint(order_bp, url_prefix='/orders')
-    app.register_blueprint(cart_item_bp)
+    app.register_blueprint(cart_item_bp, url_prefix='/cart_items')
     app.register_blueprint(wishlist_item_bp, url_prefix='/wishlist_items')
-    app.register_blueprint(discount_bp)
+    app.register_blueprint(discount_bp, url_prefix='/discounts')
     app.register_blueprint(order_item_bp, url_prefix='/order_items')
     app.register_blueprint(payment_bp, url_prefix='/payments')
-    app.register_blueprint(address_bp)
+    app.register_blueprint(address_bp, url_prefix='/addresses')
     app.register_blueprint(shopping_cart_bp, url_prefix='/shopping_carts')
     app.register_blueprint(nutrition_bp, url_prefix='/nutritions')
     app.register_blueprint(product_image_bp, url_prefix='/product_images')
@@ -58,6 +63,7 @@ def create_app():
     app.register_blueprint(recipe_tag_bp, url_prefix='/recipe_tags')
     app.register_blueprint(recipe_ingredient_bp, url_prefix='/recipe_ingredients')
     app.register_blueprint(review_bp, url_prefix='/reviews')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
 
     return app  

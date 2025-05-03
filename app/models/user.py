@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Enum
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class User(db.Model):
@@ -22,6 +23,18 @@ class User(db.Model):
     reviews = relationship("Review", back_populates="user")
     cart = db.relationship('Cart', back_populates='user', uselist=False)
     wishlists = relationship("Wishlist", back_populates="user")
+
+    # Setter untuk password, otomatis di-hash
+    @property
+    def password(self):
+        raise AttributeError("Password is write-only.")
+
+    @password.setter
+    def password(self, plain_password):
+        self.password_hash = generate_password_hash(plain_password)
+
+    def check_password(self, plain_password):
+        return check_password_hash(self.password_hash, plain_password)
 
     # Menambahkan metode as_dict di sini
     def as_dict(self):
