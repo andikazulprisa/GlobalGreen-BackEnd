@@ -13,4 +13,15 @@ class Category(db.Model):
 
     products = relationship("Product", back_populates="category")
 
+
+    def as_dict(self):
+        return {
+            "category_id": self.category_id,
+            "name": self.name,
+            "description": self.description,
+            "image_url": self.image_url,
+            "display_order": self.display_order
+        }
+
+
     
