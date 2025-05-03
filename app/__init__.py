@@ -65,5 +65,9 @@ def create_app():
     app.register_blueprint(review_bp, url_prefix='/reviews')
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
+    @app.route('/')
+    def index():
+        return "Welcome to GlobalGreen API! 🚀 🚀 "
+
 
     return app  
