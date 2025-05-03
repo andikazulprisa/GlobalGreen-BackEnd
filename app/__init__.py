@@ -25,13 +25,15 @@ from app.routes.tag_routes import tag_bp
 from app.routes.recipe_tag_routes import recipe_tag_bp
 from app.routes.recipe_ingredient_routes import recipe_ingredient_bp
 from app.routes.review_routes import review_bp
-
+from flask_cors import CORS
 
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    CORS(app)
 
     db.init_app(app)
     migrate.init_app(app, db)
