@@ -22,6 +22,19 @@ def create_product_image():
     db.session.commit()
     return jsonify(image.as_dict()), 201
 
+@product_image_bp.route('/product/<int:product_id>', methods=['POST'])
+def add_image_to_product(product_id):
+    data = request.get_json()
+    image = ProductImage(
+        product_id=product_id,
+        image_url=data['image_url'],
+        alt_text=data.get('alt_text'),
+        display_order=data.get('display_order', 0)
+    )
+    db.session.add(image)
+    db.session.commit()
+    return jsonify(image.as_dict()), 201
+
 @product_image_bp.route('/<int:image_id>', methods=['PUT'])
 def update_product_image(image_id):
     image = ProductImage.query.get_or_404(image_id)

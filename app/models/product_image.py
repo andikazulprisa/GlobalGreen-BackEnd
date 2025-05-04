@@ -12,3 +12,12 @@ class ProductImage(db.Model):
     display_order = Column(Integer)
 
     product = relationship("Product", back_populates="images")
+
+    def as_dict(self):
+        return {
+            "image_id": self.image_id,
+            "product_id": self.product_id,
+            "image_url": self.image_url,
+            "alt_text": self.alt_text,
+            "display_order": self.display_order
+        }

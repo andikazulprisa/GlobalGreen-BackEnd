@@ -21,7 +21,7 @@ class Product(db.Model):
 
     category = relationship("Category", back_populates="products")
     order_items = relationship("OrderItem", back_populates="product")
-    images = relationship("ProductImage", back_populates="product")
+    images = relationship("ProductImage", back_populates="product", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="product")
     cart_items = db.relationship('CartItem', back_populates='product', cascade='all, delete-orphan')
     wishlist_items = relationship("WishlistItem", back_populates="product")
@@ -40,5 +40,6 @@ class Product(db.Model):
             "image_url": self.image_url,
             "organic": self.organic,
             "created_at": self.created_at.isoformat() if self.created_at else None,
-            "update_at": self.update_at.isoformat() if self.update_at else None
+            "update_at": self.update_at.isoformat() if self.update_at else None,
+            "images": [image.as_dict() for image in self.images],
         }
