@@ -10,7 +10,7 @@ class User(db.Model):
 
     user_id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
+    _password = Column("password", String, nullable=False)
     first_name = Column(String)
     last_name = Column(String)
     phone = Column(String)
@@ -31,10 +31,10 @@ class User(db.Model):
 
     @password.setter
     def password(self, plain_password):
-        self.password_hash = generate_password_hash(plain_password)
+        self.password = generate_password_hash(plain_password)
 
     def check_password(self, plain_password):
-        return check_password_hash(self.password_hash, plain_password)
+        return check_password_hash(self._password, plain_password)
 
     # Menambahkan metode as_dict di sini
     def as_dict(self):
