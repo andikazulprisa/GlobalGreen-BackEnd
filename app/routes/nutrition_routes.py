@@ -37,3 +37,16 @@ def delete_nutrition(nutrition_id):
     db.session.delete(nutrition)
     db.session.commit()
     return jsonify({'message': 'Nutrition deleted'})
+
+as_dict = lambda self: {
+        "nutrition_id": self.nutrition_id,
+        "product_id": self.product_id,
+        "calories": self.calories,
+        "protein": self.protein,
+        "carbohydrates": self.carbohydrates,
+        "fats": self.fats,
+        "fiber": self.fiber,
+        "vitamins": self.vitamins,
+        "minerals": self.minerals,
+        "serving_size": self.serving_size
+    }

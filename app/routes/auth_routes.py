@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.user import User
 from app.extensions import db
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from datetime import timedelta
 
 auth_bp = Blueprint('auth_bp', __name__)
@@ -41,3 +41,14 @@ def login():
         'access_token': access_token,
         'user': user.as_dict()
     })
+
+@auth_bp.route('/me', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    return jsonify(user.as_dict()), 200
