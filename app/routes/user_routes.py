@@ -22,17 +22,26 @@ def get_user(id):
 @user_bp.route('/', methods=['POST'])
 def add_user():
     data = request.get_json()
-    new_user = User(
-        email=data['email'],
-        password=data['password'], 
-        first_name=data.get('first_name'),
-        last_name=data.get('last_name'),
-        phone=data.get('phone'),
-        role=data.get('role', 'Customer')
-    )
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
+    print(">>> POST /users dipanggil")
+    print(">>> Data diterima:", data)
+
+    try:
+        new_user = User(
+            email=data['email'],
+            password=data['password'], 
+            first_name=data.get('first_name'),
+            last_name=data.get('last_name'),
+            phone=data.get('phone'),
+            role=data.get('role', 'Customer')
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        print(">>> User berhasil disimpan ke DB")
+        return jsonify({'message': 'User created successfully'}), 201
+    except Exception as e:
+        print(">>> ERROR:", str(e))
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 # PUT /users/<id>
 @user_bp.route('/<int:id>', methods=['PUT'])
@@ -75,6 +84,7 @@ def create_dummy_user():
     db.session.commit()
     return jsonify({'message': 'Dummy user created successfully'})
 
+# GET /users/test
 @user_bp.route('/test', methods=['GET'])
 def test_route():
-    return jsonify({'message': 'hay sayang'})
+    return jsonify({'message': 'TESTING OK!'}), 200
