@@ -32,7 +32,7 @@ def login():
         return jsonify({'message': 'Email atau password salah'}), 401
 
     access_token = create_access_token(
-        identity=user.user_id,
+        identity=str(user.user_id),
         additional_claims={"role": user.role},
         expires_delta=timedelta(days=1)
     )
