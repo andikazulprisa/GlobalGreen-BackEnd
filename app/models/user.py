@@ -4,13 +4,12 @@ from datetime import datetime
 from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 class User(db.Model):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, nullable=False)
-    _password = Column("password", String, nullable=False)
+    _password = Column("password", String, nullable=False)  # simpan hashed password di kolom "password"
     first_name = Column(String)
     last_name = Column(String)
     phone = Column(String)
@@ -24,19 +23,18 @@ class User(db.Model):
     cart = db.relationship('Cart', back_populates='user', uselist=False)
     wishlists = relationship("Wishlist", back_populates="user")
 
-    # Setter untuk password, otomatis di-hash
+    # Setter & checker
     @property
     def password(self):
         raise AttributeError("Password is write-only.")
 
     @password.setter
     def password(self, plain_password):
-        self.password = generate_password_hash(plain_password)
+        self._password = generate_password_hash(plain_password)
 
     def check_password(self, plain_password):
         return check_password_hash(self._password, plain_password)
 
-    # Menambahkan metode as_dict di sini
     def as_dict(self):
         return {
             'user_id': self.user_id,
