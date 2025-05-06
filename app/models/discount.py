@@ -11,4 +11,4 @@ class Discount(db.Model):
     discount_value = Column(Float, nullable=False)
     is_active = Column(Boolean, default=True)
 
-    products = db.relationship("Product", back_populates="discounts")
+    products = db.relationship("Product", back_populates="discount")

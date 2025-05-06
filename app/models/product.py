@@ -28,8 +28,8 @@ class Product(db.Model):
     nutrition = relationship("Nutrition", back_populates="product", uselist=False)
     order_items = relationship("OrderItem", back_populates="product")
     recipe_ingredients = relationship("RecipeIngredient", back_populates="product")
-    discounts_id = Column(Integer, ForeignKey("discounts.discount_id"), nullable=True)
-    discounts = relationship("Discount")
+    discount_id = Column(Integer, ForeignKey("discounts.discount_id"), nullable=True)
+    discount = relationship("Discount", back_populates="products")
 
     def as_dict(self):
         return {
