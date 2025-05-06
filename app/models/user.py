@@ -15,7 +15,7 @@ class User(db.Model):
     phone = Column(String)
     image_url = Column(String) 
     created_at = Column(DateTime, default=datetime.now)
-    role = Column(Enum("Customer", "Seller", name="user_roles"), default="Customer")
+    role = Column(Enum("Customer", "Seller", "Admin", name="user_roles"), default="Customer")
 
     # Relationships
     addresses = relationship("Address", back_populates="user")
