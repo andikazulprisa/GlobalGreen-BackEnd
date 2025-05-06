@@ -22,9 +22,6 @@ def get_user(id):
 @user_bp.route('/', methods=['POST'])
 def add_user():
     data = request.get_json()
-    print(">>> POST /users dipanggil")
-    print(">>> Data diterima:", data)
-
     try:
         new_user = User(
             email=data['email'],
@@ -32,6 +29,7 @@ def add_user():
             first_name=data.get('first_name'),
             last_name=data.get('last_name'),
             phone=data.get('phone'),
+            image_url=data.get('image_url'),
             role=data.get('role', 'Customer')
         )
         db.session.add(new_user)
@@ -55,6 +53,7 @@ def update_user(id):
     user.first_name = data.get('first_name', user.first_name)
     user.last_name = data.get('last_name', user.last_name)
     user.phone = data.get('phone', user.phone)
+    user.image_url = data.get('image_url', user.image_url)
     user.role = data.get('role', user.role)
     db.session.commit()
     return jsonify({'message': 'User updated successfully'})
