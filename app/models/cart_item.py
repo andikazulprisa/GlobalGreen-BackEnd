@@ -18,6 +18,5 @@ class CartItem(db.Model):
             'cart_item_id': self.cart_item_id,
             'cart_id': self.cart_id,
             'product_id': self.product_id,
-            'quantity': self.quantity,
-            'product_name': self.product.name if self.product else None
+            'quantity': self.quantity
         }
