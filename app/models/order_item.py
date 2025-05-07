@@ -16,3 +16,16 @@ class OrderItem(db.Model):
 
     order = relationship("Order", back_populates="order_items")
     product = relationship("Product", back_populates="order_items")
+
+
+    def as_dict(self):
+        return {
+            "order_item_id": self.order_item_id,
+            "order_id": self.order_id,
+            "product_id": self.product_id,
+            "quantity": self.quantity,
+            "unit_price": self.unit_price,
+            "total_price": self.total_price,
+            "discount_amount": self.discount_amount
+        }
+

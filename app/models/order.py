@@ -18,4 +18,4 @@ class Order(db.Model):
 
     user = relationship("User", back_populates="orders")
     payment = relationship("Payment", back_populates="order", uselist=False)
-    order_items = relationship("OrderItem", back_populates="order")
+    order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
