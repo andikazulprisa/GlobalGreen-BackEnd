@@ -53,5 +53,5 @@ class User(db.Model):
             'phone': self.phone,
             'image_url': self.image_url,
             'created_at': self.created_at,
-            'role': self.role
+            'role': self.role.value
         }

@@ -14,5 +14,3 @@ def role_required(*roles):
             return fn(*args, **kwargs)
         return decorator
     return wrapper
-
-            

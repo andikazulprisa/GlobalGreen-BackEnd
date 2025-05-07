@@ -17,7 +17,7 @@ def register():
         first_name=data.get('first_name'),
         last_name=data.get('last_name'),
         phone=data.get('phone'),
-        role=data.get('role', 'Customer')
+        role=data.get('role', 'Customer')  # Default ke 'Customer'
     )
     db.session.add(new_user)
     db.session.commit()
@@ -33,7 +33,7 @@ def login():
 
     access_token = create_access_token(
         identity=str(user.user_id),
-        additional_claims={"role": user.role},
+        additional_claims={"role": user.role.name},  # Ubah ke string dengan .name
         expires_delta=timedelta(days=1)
     )
 
