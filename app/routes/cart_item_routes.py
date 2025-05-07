@@ -12,18 +12,26 @@ def get_cart_items():
 @cart_item_bp.route('/', methods=['POST'])
 def create_cart_item():
     data = request.json
-    new_item = CartItem(**data)
-    db.session.add(new_item)
-    db.session.commit()
-    return jsonify(new_item.serialize()), 201
+    try:
+        new_item = CartItem(**data)
+        db.session.add(new_item)
+        db.session.commit()
+        return jsonify(new_item.serialize()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 @cart_item_bp.route('/<int:id>', methods=['PUT'])
 def update_cart_item(id):
     item = CartItem.query.get_or_404(id)
-    for key, value in request.json.items():
-        setattr(item, key, value)
-    db.session.commit()
-    return jsonify(item.serialize())
+    try:
+        for key, value in request.json.items():
+            setattr(item, key, value)
+        db.session.commit()
+        return jsonify(item.serialize())
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 @cart_item_bp.route('/<int:id>', methods=['DELETE'])
 def delete_cart_item(id):
