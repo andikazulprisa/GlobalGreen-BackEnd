@@ -3,6 +3,13 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import enum
+from sqlalchemy import Enum as PgEnum
+
+# Enum untuk role user
+class UserRole(enum.Enum):
+    Customer = "Customer"
+    Seller = "Seller"
 
 class User(db.Model):
     __tablename__ = "users"
@@ -15,7 +22,8 @@ class User(db.Model):
     phone = Column(String)
     image_url = Column(String) 
     created_at = Column(DateTime, default=datetime.now)
-    role = Column(Enum("Customer", "Seller", "Admin", "Staff", name="user_roles"), default="Customer")
+    # Menggunakan PgEnum untuk enum role
+    role = Column(PgEnum(UserRole, name="user_roles", create_constraint=True, native_enum=False), default=UserRole.Customer)
 
     # Relationships
     addresses = relationship("Address", back_populates="user")
