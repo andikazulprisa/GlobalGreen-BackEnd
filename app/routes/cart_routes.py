@@ -15,6 +15,9 @@ def create_cart():
     new_cart = Cart(**data)
     db.session.add(new_cart)
     db.session.commit()
+
+    print("New cart created:", new_cart.serialize())  # Debugging line
+
     return jsonify(new_cart.serialize()), 201
 
 @cart_bp.route('/<int:id>', methods=['PUT'])
