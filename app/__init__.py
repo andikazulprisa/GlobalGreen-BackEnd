@@ -26,6 +26,7 @@ from app.routes.recipe_tag_routes import recipe_tag_bp
 from app.routes.recipe_ingredient_routes import recipe_ingredient_bp
 from app.routes.review_routes import review_bp
 from app.routes.auth_routes import auth_bp
+from app.routes.checkout_routes import checkout_bp
 from flask_cors import CORS
 from app.extensions import jwt
 
@@ -64,6 +65,7 @@ def create_app():
     app.register_blueprint(recipe_ingredient_bp, url_prefix='/recipe_ingredients')
     app.register_blueprint(review_bp, url_prefix='/reviews')
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(checkout_bp, url_prefix='/checkout')
 
     @app.route('/')
     def index():

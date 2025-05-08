@@ -1,84 +1,103 @@
 from flask import Blueprint, request, jsonify
+from app.models import db
+from app.models.cart import Cart
+from app.models.cart_item import CartItem
+from app.models.product import Product
+from app.models.address import Address
+from app.models.payment import Payment
 from app.models.order import Order
 from app.models.order_item import OrderItem
-from app.models.payment import Payment
-from app.extensions import db
 from datetime import datetime
 
 checkout_bp = Blueprint('checkout_bp', __name__)
 
 @checkout_bp.route('/checkout', methods=['POST'])
 def checkout():
-    data = request.json
+    data = request.get_json()
 
-    # Validasi field wajib
-    required_fields = ['user_id', 'shipping_address_id', 'billing_address_id', 'order_items', 'payment']
-    for field in required_fields:
-        if field not in data:
-            return jsonify({'error': f'Missing field: {field}'}), 400
+    user_id = data.get("user_id")
+    shipping_address_data = data.get("shipping_address")
+    billing_address_data = data.get("billing_address")
+    payment_method = data.get("payment_method")
 
-    try:
-        # Hitung total amount dari semua order item
-        order_items_data = data['order_items']
-        total_amount = 0
-        order_items = []
+    if not user_id or not shipping_address_data or not billing_address_data or not payment_method:
+        return jsonify({"message": "Missing required fields"}), 400
 
-        for item_data in order_items_data:
-            quantity = item_data['quantity']
-            unit_price = item_data['unit_price']
-            discount_amount = item_data.get('discount_amount', 0)
-            total_price = (quantity * unit_price) - discount_amount
+    cart = Cart.query.filter_by(user_id=user_id).first()
+    if not cart or not cart.items:
+        return jsonify({"message": "Cart is empty"}), 400
 
-            total_amount += total_price
+    total_amount = 0
+    order_items = []
 
-            order_item = OrderItem(
-                product_id=item_data['product_id'],
-                quantity=quantity,
-                unit_price=unit_price,
-                total_price=total_price,
-                discount_amount=discount_amount
-            )
-            order_items.append(order_item)
+    for item in cart.items:
+        product = item.product
+        quantity = item.quantity
 
-        # Buat order
-        new_order = Order(
-            user_id=data['user_id'],
-            shipping_address_id=data['shipping_address_id'],
-            billing_address_id=data['billing_address_id'],
-            order_date=datetime.now(),
-            total_amount=total_amount,
-            status='pending'
+        # Hitung harga awal
+        price = product.price
+        discount_amount = 0
+
+        # Cek apakah ada diskon aktif dan berlaku
+        if product.discount and product.discount.is_active:
+            now = datetime.utcnow()
+            if product.discount.valid_from <= now <= product.discount.valid_to:
+                if product.discount.discount_type == "percentage":
+                    discount_amount = price * (product.discount.discount_value / 100)
+                elif product.discount.discount_type == "fixed":
+                    discount_amount = product.discount.discount_value
+
+        final_price = max(price - discount_amount, 0)
+        total_amount += final_price * quantity
+
+        order_item = OrderItem(
+            product_id=product.product_id,
+            quantity=quantity,
+            price=final_price
         )
-        db.session.add(new_order)
-        db.session.flush()  # dapatkan order_id untuk relasi foreign key
+        order_items.append(order_item)
 
-        # Hubungkan order_item dengan order_id
-        for item in order_items:
-            item.order_id = new_order.order_id
-            db.session.add(item)
+    # Simpan shipping address
+    shipping_address = Address(user_id=user_id, **shipping_address_data)
+    db.session.add(shipping_address)
 
-        # Buat payment
-        payment_data = data['payment']
-        new_payment = Payment(
-            order_id=new_order.order_id,
-            payment_method=payment_data['payment_method'],
-            payment_status=payment_data['payment_status'],
-            amount=total_amount,
-            payment_date=datetime.now()
-        )
-        db.session.add(new_payment)
+    # Simpan billing address
+    billing_address = Address(user_id=user_id, **billing_address_data)
+    db.session.add(billing_address)
+    db.session.commit()
 
-        db.session.commit()
+    # Buat order
+    order = Order(
+        user_id=user_id,
+        total_amount=total_amount,
+        shipping_address_id=shipping_address.address_id,
+        billing_address_id=billing_address.address_id
+    )
+    db.session.add(order)
+    db.session.commit()
 
-        return jsonify({
-            'order_id': new_order.order_id,
-            'user_id': new_order.user_id,
-            'total_amount': total_amount,
-            'status': new_order.status,
-            'payment': new_payment.as_dict(),
-            'items': [item.as_dict() for item in order_items]
-        }), 201
+    # Simpan order items
+    for item in order_items:
+        item.order_id = order.order_id
+        db.session.add(item)
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+    # Simpan payment
+    payment = Payment(
+        order_id=order.order_id,
+        payment_method=payment_method,
+        amount=total_amount,
+        payment_status="pending"
+    )
+    db.session.add(payment)
+
+    # Kosongkan cart
+    for item in cart.items:
+        db.session.delete(item)
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Checkout successful",
+        "order_id": order.order_id,
+        "total_amount": total_amount
+    }), 201
