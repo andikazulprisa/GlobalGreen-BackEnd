@@ -19,3 +19,16 @@ class Order(db.Model):
     user = relationship("User", back_populates="orders")
     payment = relationship("Payment", back_populates="order", uselist=False)
     order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+
+
+    def as_dict(self):
+        return {
+            "order_id": self.order_id,
+            "user_id": self.user_id,
+            "order_date": self.order_date,
+            "total_amount": self.total_amount,
+            "status": self.status,
+            "shipping_address_id": self.shipping_address_id,
+            "billing_address_id": self.billing_address_id,
+            "delivery_date": self.delivery_date
+        }

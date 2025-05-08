@@ -11,3 +11,11 @@ class Address(db.Model):
     street_address = Column(String)
 
     user = relationship("User", back_populates="addresses")
+
+    def serialize(self):
+        return {
+            "address_id": self.address_id,
+            "user_id": self.user_id,
+            "address_type": self.address_type,
+            "street_address": self.street_address
+        }

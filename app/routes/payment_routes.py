@@ -17,6 +17,11 @@ def get_payment(payment_id):
 @payment_bp.route('/', methods=['POST'])
 def create_payment():
     data = request.json
+    required_fields = ['order_id', 'payment_method', 'payment_status', 'amount']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing field: {field}'}), 400
+
     payment = Payment(**data)
     db.session.add(payment)
     db.session.commit()

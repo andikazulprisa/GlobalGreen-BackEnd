@@ -16,3 +16,13 @@ class Payment(db.Model):
 
     # Relasi ke Order
     order = relationship("Order", back_populates="payment")
+
+    def as_dict(self):
+        return {
+            "payment_id": self.payment_id,
+            "order_id": self.order_id,
+            "payment_method": self.payment_method,
+            "payment_status": self.payment_status,
+            "amount": self.amount,
+            "payment_date": self.payment_date
+        }
