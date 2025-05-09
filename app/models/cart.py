@@ -11,9 +11,17 @@ class Cart(db.Model):
     user = db.relationship('User', back_populates='cart')  # ✅ tambahkan ini
     items = db.relationship('CartItem', back_populates='cart', cascade='all, delete-orphan')
 
-    def serialize(self):
-        return {
-            'cart_id': self.cart_id,
-            'user_id': self.user_id,
-            'items': [item.serialize() for item in self.items]
-        }
+def serialize(self):
+    return {
+        "items": [
+            {
+                "product_id": item.product.product_id,
+                "name": item.product.name,
+                "image": item.product.images[0].image_url if item.product.images else None,
+                "price": item.product.price,
+                "category": item.product.category.name if item.product.category else None,
+                "unit_type": item.product.unit_type,
+                "quantity": item.quantity
+            } for item in self.items
+        ]
+    }

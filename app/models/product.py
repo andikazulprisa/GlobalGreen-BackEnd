@@ -20,6 +20,7 @@ class Product(db.Model):
 
     # Relationships
     category = relationship("Category", back_populates="products")
+    category_id = Column(Integer, ForeignKey("categories.category_id"))
     user = relationship("User", back_populates="products")
     images = relationship("ProductImage", back_populates="product", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="product")
