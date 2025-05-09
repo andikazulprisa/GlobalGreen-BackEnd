@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import db
+from app.extensions import db
 from app.models.cart import Cart
 from app.models.cart_item import CartItem
 from app.models.product import Product
