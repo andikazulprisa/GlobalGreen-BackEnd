@@ -11,6 +11,7 @@ class CartItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
 
     cart = db.relationship('Cart', back_populates='items')
+    cart_id = db.Column(db.Integer, db.ForeignKey('carts.cart_id'))
     product = db.relationship('Product', back_populates='cart_items')
 
     def serialize(self):
