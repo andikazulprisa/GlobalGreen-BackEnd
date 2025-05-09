@@ -10,6 +10,7 @@ class Cart(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
     items = db.relationship('CartItem', backref='cart', cascade='all, delete-orphan')
+    user = db.relationship('User', back_populates='cart', casecade='all, delete-orphan')
 
     def serialize(self):
         return {
