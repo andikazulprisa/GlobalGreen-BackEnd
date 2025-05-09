@@ -30,7 +30,7 @@ class User(db.Model):
     products = relationship("Product", back_populates="user")
     orders = relationship("Order", back_populates="user")
     reviews = relationship("Review", back_populates="user")
-    carts = db.relationship('Cart', back_populates='user', uselist=False)
+    cart = db.relationship('Cart', back_populates='user', uselist=False, cascade='all, delete-orphan')
     wishlists = relationship("Wishlist", back_populates="user")
 
     @property
