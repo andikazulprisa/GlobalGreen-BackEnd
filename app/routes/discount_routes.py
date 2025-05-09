@@ -23,17 +23,24 @@ def get_discount(discount_id):
 def create_discount():
     data = request.get_json()
 
-    discount = Discount(
-        name=data.get('name'),
-        description=data.get('description'),
-        percentage=data.get('percentage'),
-        valid_from=datetime.strptime(data.get('valid_from'), '%Y-%m-%d'),
-        valid_to=datetime.strptime(data.get('valid_to'), '%Y-%m-%d')
-    )
+    try:
+        discount = Discount(
+            code=data.get('code'),
+            description=data.get('description'),
+            discount_type=data.get('discount_type'),  # "percentage" or "fixed"
+            discount_value=data.get('discount_value'),
+            valid_from=datetime.strptime(data.get('valid_from'), '%Y-%m-%d') if data.get('valid_from') else None,
+            valid_to=datetime.strptime(data.get('valid_to'), '%Y-%m-%d') if data.get('valid_to') else None,
+            is_active=data.get('is_active', True)
+        )
 
-    db.session.add(discount)
-    db.session.commit()
-    return jsonify(discount.to_dict()), 201
+        db.session.add(discount)
+        db.session.commit()
+        return jsonify(discount.to_dict()), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
 
 # Update discount
 @discount_bp.route('/<int:discount_id>', methods=['PUT'])
@@ -41,14 +48,16 @@ def update_discount(discount_id):
     discount = Discount.query.get_or_404(discount_id)
     data = request.get_json()
 
-    discount.name = data.get('name', discount.name)
+    discount.code = data.get('code', discount.code)
     discount.description = data.get('description', discount.description)
-    discount.percentage = data.get('percentage', discount.percentage)
+    discount.discount_type = data.get('discount_type', discount.discount_type)
+    discount.discount_value = data.get('discount_value', discount.discount_value)
+    discount.is_active = data.get('is_active', discount.is_active)
 
     if 'valid_from' in data:
-        discount.valid_from = datetime.strptime(data.get('valid_from'), '%Y-%m-%d')
+        discount.valid_from = datetime.strptime(data['valid_from'], '%Y-%m-%d')
     if 'valid_to' in data:
-        discount.valid_to = datetime.strptime(data.get('valid_to'), '%Y-%m-%d')
+        discount.valid_to = datetime.strptime(data['valid_to'], '%Y-%m-%d')
 
     db.session.commit()
     return jsonify(discount.to_dict()), 200
