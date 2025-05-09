@@ -26,10 +26,10 @@ def create_discount():
 
     try:
         discount = Discount(
-            code=data.get('code'),
+            code=data.get('code'),  # wajib
             description=data.get('description'),
-            discount_type=data.get('discount_type'),
-            discount_value=data.get('discount_value'),
+            discount_type=data.get('discount_type'),  # wajib, "percentage" atau "fixed"
+            discount_value=data.get('discount_value'),  # wajib
             valid_from=datetime.strptime(data.get('valid_from'), '%Y-%m-%d') if data.get('valid_from') else None,
             valid_to=datetime.strptime(data.get('valid_to'), '%Y-%m-%d') if data.get('valid_to') else None,
             is_active=data.get('is_active', True)
@@ -41,7 +41,7 @@ def create_discount():
 
     except Exception as e:
         db.session.rollback()
-        print("❌ Error:", traceback.format_exc())  # Tambah ini untuk log traceback di terminal
+        print("❌ Error creating discount:", e)
         return jsonify({"error": str(e)}), 400
 
 # Update discount
