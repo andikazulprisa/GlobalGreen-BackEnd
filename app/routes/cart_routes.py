@@ -34,3 +34,11 @@ def delete_cart(id):
     db.session.delete(cart)
     db.session.commit()
     return jsonify({"message": "Cart deleted"})
+
+# Ambil Cart berdasarkan user_id
+@cart_bp.route('/user/<int:user_id>', methods=['GET'])
+def get_carts_by_user(user_id):
+    cart = Cart.query.filter_by(user_id=user_id).first()
+    if not cart:
+        return jsonify({"message": "Cart not found for this user"}), 404
+    return jsonify(cart.serialize()), 200
