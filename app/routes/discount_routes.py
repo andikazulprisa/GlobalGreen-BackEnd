@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.models.discount import Discount
 from app.extensions import db
 from datetime import datetime
+import traceback
 
 discount_bp = Blueprint('discount_bp', __name__)
 
@@ -27,7 +28,7 @@ def create_discount():
         discount = Discount(
             code=data.get('code'),
             description=data.get('description'),
-            discount_type=data.get('discount_type'),  # "percentage" or "fixed"
+            discount_type=data.get('discount_type'),
             discount_value=data.get('discount_value'),
             valid_from=datetime.strptime(data.get('valid_from'), '%Y-%m-%d') if data.get('valid_from') else None,
             valid_to=datetime.strptime(data.get('valid_to'), '%Y-%m-%d') if data.get('valid_to') else None,
@@ -40,6 +41,7 @@ def create_discount():
 
     except Exception as e:
         db.session.rollback()
+        print("❌ Error:", traceback.format_exc())  # Tambah ini untuk log traceback di terminal
         return jsonify({"error": str(e)}), 400
 
 # Update discount
